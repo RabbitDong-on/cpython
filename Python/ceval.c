@@ -10,6 +10,7 @@
 #define PY_LOCAL_AGGRESSIVE
 
 #include "Python.h"
+#include "symbex.h"
 #include "pycore_abstract.h"      // _PyIndex_Check()
 #include "pycore_call.h"          // _PyObject_FastCallDictTstate()
 #include "pycore_ceval.h"         // _PyEval_SignalAsyncExc()
@@ -94,6 +95,20 @@ static PyObject * special_lookup(PyThreadState *, PyObject *, _Py_Identifier *);
 static int check_args_iterable(PyThreadState *, PyObject *func, PyObject *vararg);
 static void format_kwargs_error(PyThreadState *, PyObject *func, PyObject *kwargs);
 static void format_awaitable_error(PyThreadState *, PyTypeObject *, int, int);
+
+#ifdef _SYMBEX_INSTRUMENT
+
+#define _SYMBEX_TRACE_SIZE	2
+
+typedef struct {
+	uint32_t op_code;
+	uint32_t frame_count;
+	uint32_t frames[_SYMBEX_TRACE_SIZE];
+} __attribute__((packed)) TraceUpdate;
+
+static TraceUpdate trace_update;
+static int report_trace(PyFrameObject *frame, uint32_t op_code);
+#endif /* _SYMBEX_INSTRUMENT */
 
 #define NAME_ERROR_MSG \
     "name '%.200s' is not defined"
@@ -1827,6 +1842,13 @@ main_loop:
             }
         }
 #endif
+
+#ifdef _SYMBEX_INSTRUMENT
+        if (Py_EnableS2EFlag) {
+        	report_trace(f, opcode);
+        }
+#endif /* _SYMBEX_INSTRUMENT */
+
 
     dispatch_opcode:
 #ifdef DYNAMIC_EXECUTION_PROFILE
@@ -6459,6 +6481,23 @@ dtrace_function_entry(PyFrameObject *f)
 
     PyDTrace_FUNCTION_ENTRY(filename, funcname, lineno);
 }
+
+#ifdef _SYMBEX_INSTRUMENT
+static int report_trace(PyFrameObject *frame, uint32_t op_code) {
+	trace_update.op_code = op_code;
+
+	trace_update.frame_count = _SYMBEX_TRACE_SIZE;
+	trace_update.frames[0] = (uint32_t)frame->f_lasti;
+	trace_update.frames[1] = (uintptr_t)frame;
+
+	if (s2e_invoke_plugin("InterpreterMonitor", (void*)&trace_update,
+			sizeof(TraceUpdate)) != 0) {
+		return -1;
+	}
+
+	return 0;
+}
+#endif
 
 static void
 dtrace_function_return(PyFrameObject *f)

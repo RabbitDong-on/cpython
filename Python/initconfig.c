@@ -42,6 +42,7 @@ Options and arguments (and corresponding environment variables):\n\
          debug builds); also PYTHONDEBUG=x\n\
 -E     : ignore PYTHON* environment variables (such as PYTHONPATH)\n\
 -h     : print this help message and exit (also --help)\n\
+-Y     : Enable symbolic execution instrumentation\n\
 ";
 static const char usage_2[] = "\
 -i     : inspect interactively after running script; forces a prompt even\n\
@@ -1709,7 +1710,11 @@ config_read_env_vars(PyConfig *config)
             return status;
         }
     }
-
+#ifdef SYMBEX_INSTRUMENTATION
+    if (!Py_EnableS2EFlag &&
+    	(p = config_get_env(config,"PYTHONSYMBEX")) && *p != '\0')
+    	Py_EnableS2EFlag = 1;
+#endif
     return _PyStatus_OK();
 }
 
@@ -2283,6 +2288,11 @@ config_parse_cmdline(PyConfig *config, PyWideStringList *warnoptions,
         }
 
         switch (c) {
+#ifdef SYMBEX_INSTRUMENTATION
+        case 'Y':
+        	Py_EnableS2EFlag++;
+        	break;
+#endif
         case 0:
             // Handle long option.
             assert(longindex == 0); // Only one long option now.
@@ -2388,7 +2398,6 @@ config_parse_cmdline(PyConfig *config, PyWideStringList *warnoptions,
             return _PyStatus_EXIT(2);
         }
     } while (1);
-
     if (print_version) {
         printf("Python %s\n",
                 (print_version >= 2) ? Py_GetVersion() : PY_VERSION);

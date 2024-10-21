@@ -1513,6 +1513,73 @@ case $CC in
     ;;
 esac
 
+# Check for --enable-symbex
+AC_MSG_CHECKING(for --enable-symbex)
+AC_ARG_ENABLE(symbex,
+              AS_HELP_STRING([--enable-symbex], [build symbolic execution instrumentation]))
+              
+if test -z "$enable_symbex"
+then
+  enable_symbex="no"
+fi
+case "$enable_symbex" in
+yes)
+  AC_DEFINE(SYMBEX_INSTRUMENTATION, 1,
+    [Define if you want to instrument the interpreter for symbolic execution.])
+  ;;
+no)
+  ;;
+*)
+  AC_MSG_ERROR([Unexpected value for option 'symbex'])
+  ;;
+esac
+AC_MSG_RESULT($enable_symbex)
+
+# Check for --enable-symbex-opt
+AC_MSG_CHECKING(for --enable-symbex-opt)
+AC_ARG_ENABLE(symbex-opt,
+              AS_HELP_STRING([--enable-symbex-opt], [enable/disable symbolic execution optimizations]))
+              
+if test -z "$enable_symbex_opt"
+then
+  enable_symbex_opt="all"
+fi            
+case "$enable_symbex_opt" in
+all)
+  symbex_opt_list="concrbuff intern hashes fastpath"
+  ;;
+none)
+  symbex_opt_list=""
+  ;;
+*)
+  symbex_opt_list=${enable_symbex_opt//,/ }
+  ;;
+esac
+for symbex_opt in $symbex_opt_list; do
+  case "$symbex_opt" in
+  concrbuff)
+    AC_DEFINE(SYMBEX_OPT_CONCRETIZE_BUFFSIZES, 1,
+      [Define if you want to concretize buffers during symbolic execution.])
+    ;;
+  intern)
+    AC_DEFINE(SYMBEX_OPT_DISABLE_INTERNING, 1,
+      [Define if you want to disable interning during symbolic execution.])
+    ;;
+  hashes)
+    AC_DEFINE(SYMBEX_OPT_NEUTRALIZE_HASHES, 1,
+      [Define if you want to neutralize hashes during symbolic execution.])
+    ;;
+  fastpath)
+    AC_DEFINE(SYMBEX_OPT_DISABLE_FAST_PATHS, 1,
+      [Define if you want to disable fast paths during symbolic execution.])
+    ;;
+  *)
+    AC_MSG_ERROR([Unexpected value for symbolic optimization])
+    ;;
+  esac
+done
+AC_MSG_RESULT($enable_symbex_opt)
+
 # XXX Shouldn't the code above that fiddles with BASECFLAGS and OPT be
 # merged with this chunk of code?
 

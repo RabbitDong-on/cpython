@@ -6,6 +6,13 @@
 #else
 #  define D(x)
 #endif
+
+// FUNCEQ
+#ifdef SYMBEX_OPTIMIZATIONS
+/* XXX: Not sure this is the right place for the flag... */
+int Py_EnableS2EFlag = 0;
+#endif
+
 static const int n_keyword_lists = 9;
 static KeywordToken *reserved_keywords[] = {
     (KeywordToken[]) {{NULL, -1}},
