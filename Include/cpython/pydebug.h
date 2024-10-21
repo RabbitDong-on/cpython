@@ -26,6 +26,11 @@ PyAPI_DATA(int) Py_LegacyWindowsFSEncodingFlag;
 PyAPI_DATA(int) Py_LegacyWindowsStdioFlag;
 #endif
 
+// FUNCEQ
+#ifdef SYMBEX_OPTIMIZATIONS
+PyAPI_DATA(int) Py_EnableS2EFlag;
+#endif
+
 /* this is a wrapper around getenv() that pays attention to
    Py_IgnoreEnvironmentFlag.  It should be used for getting variables like
    PYTHONPATH and PYTHONHOME from the environment */
