@@ -118,7 +118,7 @@ converting the dict to the combined table.
 #include "pycore_pystate.h"  // _PyThreadState_GET()
 #include "dict-common.h"
 #include "stringlib/eq.h"    // unicode_eq()
-
+#include "symbex.h"
 /*[clinic input]
 class dict "PyDictObject *" "&PyDict_Type"
 [clinic start generated code]*/
@@ -673,6 +673,9 @@ new_dict(PyDictKeysObject *keys, PyObject **values)
     mp->ma_values = values;
     mp->ma_used = 0;
     mp->ma_version_tag = DICT_NEXT_VERSION();
+#ifdef _SYMBEX_DICT_HASHES
+    mp->ma_flat = 0;
+#endif
     ASSERT_CONSISTENT(mp);
     return (PyObject *)mp;
 }

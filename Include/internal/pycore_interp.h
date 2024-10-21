@@ -13,7 +13,7 @@ extern "C" {
 #include "pycore_gil.h"           // struct _gil_runtime_state
 #include "pycore_gc.h"            // struct _gc_runtime_state
 #include "pycore_warnings.h"      // struct _warnings_runtime_state
-
+#include "symbex.h"
 struct _pending_calls {
     PyThread_type_lock lock;
     /* Request for running pending calls. */
@@ -207,10 +207,10 @@ struct type_cache {
 
 
 /* interpreter state */
-
+#ifndef _SYMBEX_INTERNED
 #define _PY_NSMALLPOSINTS           257
 #define _PY_NSMALLNEGINTS           5
-
+#endif
 // _PyLong_GetZero() and _PyLong_GetOne() must always be available
 #if _PY_NSMALLPOSINTS < 2
 #  error "_PY_NSMALLPOSINTS must be greater than 1"

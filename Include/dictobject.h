@@ -4,7 +4,6 @@
 extern "C" {
 #endif
 
-#include "symbex.h"
 /* Dictionary object type -- mapping from hashable object to object */
 
 /* The distribution includes a separate file, Objects/dictnotes.txt,

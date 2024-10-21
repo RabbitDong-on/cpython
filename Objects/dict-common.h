@@ -1,6 +1,5 @@
 #ifndef Py_DICT_COMMON_H
 #define Py_DICT_COMMON_H
-
 typedef struct {
     /* Cached hash code of me_key. */
     Py_hash_t me_hash;

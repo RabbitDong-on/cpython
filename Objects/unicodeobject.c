@@ -1213,13 +1213,19 @@ static PyUnicodeObject *
 _PyUnicode_New(Py_ssize_t length)
 {
     PyUnicodeObject *unicode;
+#ifdef _SYMBEX_VARSIZE
+    Py_ssize_t sym_length = length;
+    s2e_get_example(&length, sizeof(length));
+    s2e_assume(sym_length <= length);
+#endif
     size_t new_size;
 
+#ifndef _SYMBEX_INTERNED
     /* Optimization for empty strings */
     if (length == 0) {
         return (PyUnicodeObject *)unicode_new_empty();
     }
-
+#endif
     /* Ensure we won't overflow the size. */
     if (length > ((PY_SSIZE_T_MAX / (Py_ssize_t)sizeof(Py_UNICODE)) - 1)) {
         return (PyUnicodeObject *)PyErr_NoMemory();
@@ -1244,6 +1250,11 @@ _PyUnicode_New(Py_ssize_t length)
     _PyUnicode_STATE(unicode).ascii = 0;
     _PyUnicode_DATA_ANY(unicode) = NULL;
     _PyUnicode_LENGTH(unicode) = 0;
+#ifdef _SYMBEX_VARSIZE
+     _PyUnicode_LENGTH(unicode) = sym_length;
+#else
+    _PyUnicode_LENGTH(unicode) = 0;
+#endif
     _PyUnicode_UTF8(unicode) = NULL;
     _PyUnicode_UTF8_LENGTH(unicode) = 0;
 
@@ -12066,6 +12077,28 @@ unicode_getitem(PyObject *self, Py_ssize_t index)
     return unicode_char(ch);
 }
 
+#ifdef _SYMBEX_HASHES
+static Py_hash_t
+unicode_hash(PyObject *self)
+{
+    Py_uhash_t x;  /* Unsigned for defined overflow behavior. */
+
+#ifdef Py_DEBUG
+    assert(_Py_HashSecret_Initialized);
+#endif
+    if (_PyUnicode_HASH(self) != -1)
+        return _PyUnicode_HASH(self);
+    if (PyUnicode_READY(self) == -1)
+        return -1;
+#if defined(_SYMBEX_GLOBAL_HASHES) || defined(_SYMBEX_CONST_HASHES)
+    x = _SYMBEX_HASH_VALUE;
+#else
+    x = PyUnicode_GET_SIZE(self);
+#endif
+    _PyUnicode_HASH(self) = x;
+    return x;
+}
+#else
 /* Believe it or not, this produces the same value for ASCII strings
    as bytes_hash(). */
 static Py_hash_t
@@ -12086,6 +12119,7 @@ unicode_hash(PyObject *self)
     _PyUnicode_HASH(self) = x;
     return x;
 }
+#endif /* _SYMBEX_HASHES */
 
 PyDoc_STRVAR(index__doc__,
              "S.index(sub[, start[, end]]) -> int\n\

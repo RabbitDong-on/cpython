@@ -1,7 +1,7 @@
 #ifndef Py_CPYTHON_DICTOBJECT_H
 #  error "this header file must not be included directly"
 #endif
-
+#include "symbex.h"
 typedef struct _dictkeysobject PyDictKeysObject;
 
 /* The ma_values pointer is NULL for a combined table
@@ -25,6 +25,9 @@ typedef struct {
        If ma_values is not NULL, the table is splitted:
        keys are stored in ma_keys and values are stored in ma_values */
     PyObject **ma_values;
+#ifdef _SYMBEX_DICT_HASHES
+    int ma_flat;
+#endif
 } PyDictObject;
 
 PyAPI_FUNC(PyObject *) _PyDict_GetItem_KnownHash(PyObject *mp, PyObject *key,

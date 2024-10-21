@@ -27,7 +27,7 @@ PyAPI_DATA(int) Py_LegacyWindowsStdioFlag;
 #endif
 
 // FUNCEQ
-#ifdef SYMBEX_OPTIMIZATIONS
+#ifdef SYMBEX_INSTRUMENTATION
 PyAPI_DATA(int) Py_EnableS2EFlag;
 #endif
 

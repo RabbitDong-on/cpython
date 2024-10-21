@@ -90,6 +90,9 @@ struct _PyTraceMalloc_Config _Py_tracemalloc_config = _PyTraceMalloc_Config_INIT
 static void *
 _PyMem_RawMalloc(void *ctx, size_t size)
 {
+#ifdef _SYMBEX_ALLOC
+    PREPARE_ALLOC(size);
+#endif
     /* PyMem_RawMalloc(0) means malloc(1). Some systems would return NULL
        for malloc(0), which would be treated as an error. Some platforms would
        return a pointer with no memory behind it, which would break pymalloc.
@@ -102,6 +105,10 @@ _PyMem_RawMalloc(void *ctx, size_t size)
 static void *
 _PyMem_RawCalloc(void *ctx, size_t nelem, size_t elsize)
 {
+#ifdef _SYMBEX_ALLOC
+    PREPARE_ALLOC(nelem);
+    PREPARE_ALLOC(elsize);
+#endif
     /* PyMem_RawCalloc(0, 0) means calloc(1, 1). Some systems would return NULL
        for calloc(0, 0), which would be treated as an error. Some platforms
        would return a pointer with no memory behind it, which would break
@@ -116,6 +123,9 @@ _PyMem_RawCalloc(void *ctx, size_t nelem, size_t elsize)
 static void *
 _PyMem_RawRealloc(void *ctx, void *ptr, size_t size)
 {
+#ifdef _SYMBEX_ALLOC
+    PREPARE_ALLOC(size);
+#endif
     if (size == 0)
         size = 1;
     return realloc(ptr, size);
@@ -561,6 +571,9 @@ PyObject_SetArenaAllocator(PyObjectArenaAllocator *allocator)
 void *
 PyMem_RawMalloc(size_t size)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&size, sizeof(size));
+#endif
     /*
      * Limit ourselves to PY_SSIZE_T_MAX bytes to prevent security holes.
      * Most python internals blindly use a signed Py_ssize_t to track
@@ -575,6 +588,10 @@ PyMem_RawMalloc(size_t size)
 void *
 PyMem_RawCalloc(size_t nelem, size_t elsize)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nelem,sizeof(nelem));
+    s2e_get_example(&elsize, sizeof(elsize));
+#endif
     /* see PyMem_RawMalloc() */
     if (elsize != 0 && nelem > (size_t)PY_SSIZE_T_MAX / elsize)
         return NULL;
@@ -584,6 +601,9 @@ PyMem_RawCalloc(size_t nelem, size_t elsize)
 void*
 PyMem_RawRealloc(void *ptr, size_t new_size)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&new_size, sizeof(new_size));
+#endif
     /* see PyMem_RawMalloc() */
     if (new_size > (size_t)PY_SSIZE_T_MAX)
         return NULL;
@@ -599,6 +619,9 @@ void PyMem_RawFree(void *ptr)
 void *
 PyMem_Malloc(size_t size)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&size, sizeof(size));
+#endif
     /* see PyMem_RawMalloc() */
     if (size > (size_t)PY_SSIZE_T_MAX)
         return NULL;
@@ -608,6 +631,10 @@ PyMem_Malloc(size_t size)
 void *
 PyMem_Calloc(size_t nelem, size_t elsize)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nelem,sizeof(nelem));
+    s2e_get_example(&elsize, sizeof(elsize));
+#endif
     /* see PyMem_RawMalloc() */
     if (elsize != 0 && nelem > (size_t)PY_SSIZE_T_MAX / elsize)
         return NULL;
@@ -617,6 +644,9 @@ PyMem_Calloc(size_t nelem, size_t elsize)
 void *
 PyMem_Realloc(void *ptr, size_t new_size)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&new_size, sizeof(new_size));
+#endif
     /* see PyMem_RawMalloc() */
     if (new_size > (size_t)PY_SSIZE_T_MAX)
         return NULL;
@@ -679,6 +709,9 @@ _PyMem_Strdup(const char *str)
 void *
 PyObject_Malloc(size_t size)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&size, sizeof(size));
+#endif
     /* see PyMem_RawMalloc() */
     if (size > (size_t)PY_SSIZE_T_MAX)
         return NULL;
@@ -688,6 +721,10 @@ PyObject_Malloc(size_t size)
 void *
 PyObject_Calloc(size_t nelem, size_t elsize)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nelem, sizeof(nelem));
+    s2e_get_example(&elsize,sizeof(elsize));
+#endif
     /* see PyMem_RawMalloc() */
     if (elsize != 0 && nelem > (size_t)PY_SSIZE_T_MAX / elsize)
         return NULL;
@@ -697,6 +734,9 @@ PyObject_Calloc(size_t nelem, size_t elsize)
 void *
 PyObject_Realloc(void *ptr, size_t new_size)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&new_size, sizeof(new_size));
+#endif
     /* see PyMem_RawMalloc() */
     if (new_size > (size_t)PY_SSIZE_T_MAX)
         return NULL;
@@ -2491,12 +2531,19 @@ _PyMem_DebugRawAlloc(int use_calloc, void *ctx, size_t nbytes)
 static void *
 _PyMem_DebugRawMalloc(void *ctx, size_t nbytes)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nbytes, sizeof(nbytes));
+#endif
     return _PyMem_DebugRawAlloc(0, ctx, nbytes);
 }
 
 static void *
 _PyMem_DebugRawCalloc(void *ctx, size_t nelem, size_t elsize)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nelem, sizeof(nelem));
+    s2e_get_example(&elsize,sizeof(elsize));
+#endif
     size_t nbytes;
     assert(elsize == 0 || nelem <= (size_t)PY_SSIZE_T_MAX / elsize);
     nbytes = nelem * elsize;
@@ -2532,6 +2579,9 @@ _PyMem_DebugRawFree(void *ctx, void *p)
 static void *
 _PyMem_DebugRawRealloc(void *ctx, void *p, size_t nbytes)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nbytes, sizeof(nbytes));
+#endif
     if (p == NULL) {
         return _PyMem_DebugRawAlloc(0, ctx, nbytes);
     }
@@ -2642,6 +2692,9 @@ _PyMem_DebugCheckGIL(const char *func)
 static void *
 _PyMem_DebugMalloc(void *ctx, size_t nbytes)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nbytes, sizeof(nbytes));
+#endif
     _PyMem_DebugCheckGIL(__func__);
     return _PyMem_DebugRawMalloc(ctx, nbytes);
 }
@@ -2649,6 +2702,10 @@ _PyMem_DebugMalloc(void *ctx, size_t nbytes)
 static void *
 _PyMem_DebugCalloc(void *ctx, size_t nelem, size_t elsize)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nelem, sizeof(nelem));
+    s2e_get_example(&elsize,sizeof(elsize));
+#endif
     _PyMem_DebugCheckGIL(__func__);
     return _PyMem_DebugRawCalloc(ctx, nelem, elsize);
 }
@@ -2665,6 +2722,9 @@ _PyMem_DebugFree(void *ctx, void *ptr)
 static void *
 _PyMem_DebugRealloc(void *ctx, void *ptr, size_t nbytes)
 {
+#ifdef _SYMBEX_ALLOC
+    s2e_get_example(&nbytes, sizeof(nbytes));
+#endif
     _PyMem_DebugCheckGIL(__func__);
     return _PyMem_DebugRawRealloc(ctx, ptr, nbytes);
 }

@@ -8,7 +8,7 @@
 #endif
 
 // FUNCEQ
-#ifdef SYMBEX_OPTIMIZATIONS
+#ifdef SYMBEX_INSTRUMENTATION
 /* XXX: Not sure this is the right place for the flag... */
 int Py_EnableS2EFlag = 0;
 #endif

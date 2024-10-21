@@ -14,7 +14,7 @@
 #include "pycore_unionobject.h"   // _PyUnion_Type
 #include "frameobject.h"
 #include "interpreteridobject.h"
-
+#include "symbex.h"
 #ifdef Py_LIMITED_API
    // Prevent recursive call _Py_IncRef() <=> Py_INCREF()
 #  error "Py_LIMITED_API macro must not be defined"
