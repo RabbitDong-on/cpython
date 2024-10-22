@@ -30,7 +30,7 @@ PYTHONCHEF := $(dir $(lastword $(MAKEFILE_LIST)))
 PYTHONSRC := $(PYTHONCHEF)/..
 PYTHONBIN_PREFIX := $(realpath .)/python-bin
 
-VIRTUALENV := virtualenv-1.10.1
+VIRTUALENV := virtualenv-20.0.20
 SIMPLEJSON := simplejson-3.3.1
 
 VIRTUALENV_PKG := 
@@ -56,23 +56,23 @@ PYTHON_BUILDS := python-opt0-none/python python-opt1-concrbuff/python \
 
 python-opt0-none/Makefile:
 	mkdir -p python-opt0-none
-	cd python-opt0-none && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=none --prefix=$(PYTHONBIN_PREFIX)
+	cd python-opt0-none && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=none --prefix=$(PYTHONBIN_PREFIX) --with-openssl=/usr/local/openssl
 
 python-opt1-concrbuff/Makefile:
 	mkdir -p python-opt1-concrbuff
-	cd python-opt1-concrbuff && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=concrbuff --prefix=$(PYTHONBIN_PREFIX)
+	cd python-opt1-concrbuff && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=concrbuff --prefix=$(PYTHONBIN_PREFIX) --with-openssl=/usr/local/openssl
 
 python-opt2-intern/Makefile:
 	mkdir -p python-opt2-intern
-	cd python-opt2-intern && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=concrbuff,intern --prefix=$(PYTHONBIN_PREFIX)
+	cd python-opt2-intern && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=concrbuff,intern --prefix=$(PYTHONBIN_PREFIX) --with-openssl=/usr/local/openssl
 
 python-opt3-hashes/Makefile:
 	mkdir -p python-opt3-hashes
-	cd python-opt3-hashes && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=concrbuff,intern,hashes --prefix=$(PYTHONBIN_PREFIX)
+	cd python-opt3-hashes && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=concrbuff,intern,hashes --prefix=$(PYTHONBIN_PREFIX) --with-openssl=/usr/local/openssl
 
 python-opt4-all/Makefile:
 	mkdir -p python-opt4-all
-	cd python-opt4-all && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=all --prefix=$(PYTHONBIN_PREFIX)
+	cd python-opt4-all && ../$(PYTHONSRC)/configure --enable-symbex --enable-symbex-opt=all --prefix=$(PYTHONBIN_PREFIX) --with-openssl=/usr/local/openssl
 
 # Python builds
 ###############
@@ -119,7 +119,8 @@ $(VIRTUALENV)/setup.py: $(VIRTUALENV).tar.gz
 env: stamps/virtualenv-configure
 
 stamps/virtualenv-install: $(PYTHON_BUILDS) python-bin/bin/python $(VIRTUALENV)/setup.py
-	cd $(VIRTUALENV) && ../python-bin/bin/python setup.py install
+	#cd $(VIRTUALENV) && ../python-bin/bin/python3 setup.py install
+	cd $(VIRTUALENV) && ../python-bin/bin/pip3 install -e .
 	mkdir -p stamps && touch $@
 
 stamps/virtualenv-create: stamps/virtualenv-install
@@ -138,7 +139,7 @@ stamps/virtualenv-create: stamps/virtualenv-install
 #stamps/simplejson-install
 stamps/virtualenv-configure: stamps/virtualenv-create
 	python-env/bin/pip install -r $(PYTHONCHEF)/symtests/requirement_simplejson.txt
-	python-env/bin/pip install -r $(PYTHONCHEF)/symtests/requirement_other.txt --no-index --find-links=$(PYTHONCHEF)/packages
+	#python-env/bin/pip install -r $(PYTHONCHEF)/symtests/requirement_other.txt --no-index --find-links=$(PYTHONCHEF)/packages
 	#python-env/bin/pip install $(VIRTUALENV_PKG)
 	#cd $(SIMPLEJSON) && ../python-env/bin/python setup.py install
 	mkdir -p stamps && touch $@

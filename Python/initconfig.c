@@ -1711,6 +1711,7 @@ config_read_env_vars(PyConfig *config)
         }
     }
 #ifdef SYMBEX_INSTRUMENTATION
+    char *p;
     if (!Py_EnableS2EFlag &&
     	(p = config_get_env(config,"PYTHONSYMBEX")) && *p != '\0')
     	Py_EnableS2EFlag = 1;

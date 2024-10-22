@@ -19,10 +19,10 @@
 class int "PyObject *" "&PyLong_Type"
 [clinic start generated code]*/
 /*[clinic end generated code: output=da39a3ee5e6b4b0d input=ec0275e3422a36e3]*/
-
+#ifndef _SYMBEX_INTERNED
 #define NSMALLNEGINTS           _PY_NSMALLNEGINTS
 #define NSMALLPOSINTS           _PY_NSMALLPOSINTS
-
+#endif /* ifndef _SYMBEX_INTERNED */
 _Py_IDENTIFIER(little);
 _Py_IDENTIFIER(big);
 

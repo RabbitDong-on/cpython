@@ -207,14 +207,14 @@ struct type_cache {
 
 
 /* interpreter state */
-#ifndef _SYMBEX_INTERNED
+// #ifndef _SYMBEX_INTERNED
 #define _PY_NSMALLPOSINTS           257
 #define _PY_NSMALLNEGINTS           5
 #endif
 // _PyLong_GetZero() and _PyLong_GetOne() must always be available
 #if _PY_NSMALLPOSINTS < 2
 #  error "_PY_NSMALLPOSINTS must be greater than 1"
-#endif
+// #endif
 
 // The PyInterpreterState typedef is in Include/pystate.h.
 struct _is {

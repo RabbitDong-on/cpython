@@ -41,7 +41,7 @@
 #include <inttypes.h>
 #include <stdarg.h>
 
-#include <pydebug.h>
+#include "cpython/pydebug.h"
 
 #define S2E_INSTRUCTION_COMPLEX(val1, val2)             \
     ".byte 0x0F, 0x3F\n"                                \
