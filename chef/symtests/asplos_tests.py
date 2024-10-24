@@ -34,7 +34,7 @@ import importlib
 import os
 import sys
 
-from chef import light
+import light
 
 # TODO: Devise more meaningful defaults.
 # Idea: use a method to transform a concrete input into a wildcard of the same length.

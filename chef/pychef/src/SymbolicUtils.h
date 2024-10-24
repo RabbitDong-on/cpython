@@ -37,7 +37,6 @@ public:
 	void *ConcretizePointer(const void *p);
 	const char *ConcretizeString(const char *s);
 
-	PyObject *MakeSymbolicString(unsigned int size, const char *name);
 	void KillState(int status, const char *message);
 private:
 	S2EGuest *s2e_guest_;

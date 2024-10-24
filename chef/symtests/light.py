@@ -31,11 +31,7 @@ import re
 import struct
 import sys
 import traceback
-
-try:
-    from chef import symbex
-except ImportError:
-    symbex = None  # TODO: Replace with a friendlier stub
+import symbex
 
 
 class SymbolicTest(object):

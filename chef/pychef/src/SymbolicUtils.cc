@@ -77,31 +77,6 @@ const char *SymbolicUtils::ConcretizeString(const char *s) {
 }
 
 
-/*
- * Construct an unconstrained symbolic Python string object of size `size'
- * and symbolic name `name'.
- */
-PyObject *SymbolicUtils::MakeSymbolicString(unsigned int size,
-		const char *name) {
-	char *sym_data = (char *)PyMem_Malloc(size + 1);
-
-	if (!sym_data) {
-		return PyErr_NoMemory();
-	}
-
-	if (s2e_guest_->version()) {
-		s2e_guest_->MakeSymbolic((void*)sym_data, size + 1, name);
-	} else {
-		memset(sym_data, 'X', size);
-	}
-
-	sym_data[size] = 0;
-
-	PyObject *result = PyString_FromString(sym_data);
-	PyMem_Free(sym_data);
-
-	return result;
-}
 
 
 /*

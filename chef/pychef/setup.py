@@ -28,13 +28,10 @@ __author__ = "stefan.bucur@epfl.ch (Stefan Bucur)"
 from distutils.core import setup, Extension
 
 def buildExtSymbex():
-    flags = dict(include_dirs=['s2e/guest/include'])
-
     return Extension('symbex', ['src/symbexmodule.cc',
                                 'src/ConcolicSession.cc',
                                 'src/S2EGuest.cc',
-                                'src/SymbolicUtils.cc'],
-                     **flags)
+                                'src/SymbolicUtils.cc'])
                      
 
 setup_flags = dict(
@@ -44,9 +41,6 @@ setup_flags = dict(
     author="Stefan Bucur",
     author_email="stefan.bucur@epfl.ch",
     url="http://dslab.epfl.ch",
-    package_dir={"": "lib"},
-    packages=['chef'],
-    ext_package='chef',
     ext_modules=[buildExtSymbex()]
 )
 

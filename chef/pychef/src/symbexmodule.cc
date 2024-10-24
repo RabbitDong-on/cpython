@@ -99,20 +99,6 @@ symbex_symint(PyObject *self, PyObject *args) {
 
 /*----------------------------------------------------------------------------*/
 
-PyDoc_STRVAR(symbex_symtoconcrete_doc,
-"symtoconcrete(obj) -> object\n\
-\n\
-Return a concretized version of the symbolic object passed as a parameter.");
-
-static PyObject *
-symbex_symtoconcrete(PyObject *self, PyObject *args) {
-  const char *string;
-  if (!PyArg_ParseTuple(args, "s:symtoconcrete", &string))
-    return NULL;
-
-  return PyString_FromString(symbolic_utils->ConcretizeString(string));
-}
-
 
 /*----------------------------------------------------------------------------*/
 
@@ -290,27 +276,6 @@ symbex_assert(PyObject *self,PyObject *args){
 
 /*----------------------------------------------------------------------------*/
 
-PyDoc_STRVAR(symbex_assumeascii_doc,
-"assumeascii(str) \n\
-\n\
-Assume that the string passed as argument doesn't contain characters beyond 0x7F");
-
-static PyObject *
-symbex_assumeascii(PyObject *self, PyObject *args) {
-	PyStringObject *string_obj;
-	Py_ssize_t i;
-
-	if (!PyArg_ParseTuple(args, "O!:assumeascii", &PyString_Type, &string_obj)) {
-		return NULL;
-	}
-
-	for (i = 0; i < Py_SIZE(string_obj); ++i) {
-		s2e_guest->Assume(((unsigned char)string_obj->ob_sval[i]) < 0x80);
-	}
-
-	Py_RETURN_NONE;
-}
-
 
 /*----------------------------------------------------------------------------*/
 #if 0
@@ -342,10 +307,6 @@ static PyMethodDef SymbexMethods[] = {
 	{ "symsequence", symbex_symsequence, METH_VARARGS, symbex_symsequence_doc },
 	{ "symint", symbex_symint, METH_VARARGS, symbex_symint_doc },
 
-	{ "symtoconcrete", symbex_symtoconcrete, METH_VARARGS,
-			symbex_symtoconcrete_doc },
-	{ "concrete", symbex_concrete, METH_VARARGS, symbex_concrete_doc },
-
 	{ "killstate", symbex_killstate, METH_VARARGS, symbex_killstate_doc },
 
 	{ "startconcolic", symbex_startconcolic, METH_VARARGS, symbex_startconcolic_doc },
@@ -355,7 +316,6 @@ static PyMethodDef SymbexMethods[] = {
 #endif
 
 	{ "assume", symbex_assume, METH_VARARGS, symbex_assume_doc },
-	{ "assumeascii", symbex_assumeascii, METH_VARARGS, symbex_assumeascii_doc },
 
 	// supply
 	{ "Assert", symbex_assert, METH_VARARGS, symbex_assert_doc},
@@ -367,13 +327,21 @@ static PyMethodDef SymbexMethods[] = {
 };
 
 
-PyMODINIT_FUNC
-initsymbex(void) {
-	PyObject *m;
+static struct PyModuleDef symbexmodule={
+	PyModuleDef_HEAD_INIT,
+	"symbex",
+	"Python interface for the symbex library functions",
+	-1,
+	SymbexMethods
+};
 
-	m = Py_InitModule3("symbex", SymbexMethods, module_doc);
+PyMODINIT_FUNC
+PyInit_symbex(void) {
+
+	PyObject *m=PyModule_Create(&symbexmodule);
+
 	if (m == NULL)
-	  return;
+	  return NULL;
 
 	if (s2e_guest == NULL) {
 		s2e_guest = new S2EGuest();
@@ -384,8 +352,9 @@ initsymbex(void) {
 	if (SymbexError == NULL) {
 		SymbexError = PyErr_NewException((char*)"symbex.SymbexError", NULL, NULL);
 		if (SymbexError == NULL)
-			return;
+			return NULL;
 	}
 	Py_INCREF(SymbexError);
 	PyModule_AddObject(m, "SymbexError", SymbexError);
+	return m;
 }

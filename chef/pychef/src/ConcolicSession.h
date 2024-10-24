@@ -70,8 +70,6 @@ private:
 	int CheckObjectSize(Py_ssize_t size, int max_size, int min_size);
 	void ConstrainObjectSize(Py_ssize_t size, int max_size, int min_size);
 
-	PyObject *MakeConcolicString(PyObject *target, const char *name,
-			int max_size, int min_size);
 	PyObject *MakeConcolicUnicode(PyObject *target, const char *name,
 			int max_size, int min_size);
 	PyObject *MakeConcolicList(PyObject *target, const char *name,
