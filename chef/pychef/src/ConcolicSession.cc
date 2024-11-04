@@ -221,11 +221,16 @@ PyObject *ConcolicSession::MakeConcolicList(PyObject *target,
 	assert(PyList_Check(target));
 
 	PyListObject *list_target = (PyListObject*)target;
+	// 
+	Py_ssize_t list_size=PyList_GET_SIZE(list_target);
 	// if (CheckObjectSize(list_target->ob_size, max_size, min_size) < 0) {
 	if (CheckObjectSize(PyList_GET_SIZE(list_target), max_size, min_size) < 0) {
 		PyErr_SetString(PyExc_ValueError, "Incompatible size constraints");
 		return NULL;
 	}
+
+	
+
 
 	if (max_size >= 0) {
 		MakeConcolicBuffer(&PyList_GET_SIZE(list_target), sizeof(PyList_GET_SIZE(list_target)),

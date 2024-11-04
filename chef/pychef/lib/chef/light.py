@@ -56,7 +56,7 @@ class SymbolicTest(object):
             return symbex.symint(default, name)
 
     def getString(self, name, default, max_size=None, min_size=None, ascii=False):
-        if not isinstance(default, basestring):
+        if not isinstance(default, str):
             raise ValueError("Default value must be string or unicode")
 
         if self.replay_assgn:
@@ -69,10 +69,11 @@ class SymbolicTest(object):
         else:
             value = symbex.symsequence(default, name)
 
-        if ascii:
-            symbex.assumeascii(value)
-
         return value
+
+    def 
+
+
     # supply
     def killstate(self,status,messages):
         symbex.killstate(status,messages)

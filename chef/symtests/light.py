@@ -52,7 +52,7 @@ class SymbolicTest(object):
             return symbex.symint(default, name)
 
     def getString(self, name, default, max_size=None, min_size=None, ascii=False):
-        if not isinstance(default, basestring):
+        if not isinstance(default, str):
             raise ValueError("Default value must be string or unicode")
 
         if self.replay_assgn:
