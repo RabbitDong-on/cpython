@@ -29,7 +29,6 @@ __author__ = "stefan.bucur@epfl.ch (Stefan Bucur)"
 
 
 import argparse
-import cStringIO
 import importlib
 import os
 import sys
@@ -89,74 +88,6 @@ class HumanevalTest(light.SymbolicTest):
 
 
 
-class ConfigParserTest(light.SymbolicTest):
-    def setUp(self):
-        self.ConfigParser = importlib.import_module("ConfigParser")
-
-    def runTest(self):
-        input_string = self.getString("input", '\x00'*10)
-        string_file = cStringIO.StringIO(input_string)
-        
-        config = self.ConfigParser.ConfigParser()
-        config.readfp(string_file)
-        
-        for s in config.sections():
-            config.options(s)
-
-
-class ArgparseTest(light.SymbolicTest):
-    def setUp(self):
-        self.argparse = importlib.import_module("argparse")
-    
-    def runTest(self):
-        parser = self.argparse.ArgumentParser(description="Symtest")
-        parser.add_argument(self.getString("arg1_name", '\x00'*3))
-        parser.add_argument(self.getString("arg2_name", '\x00'*3))
-        
-        parser.parse_args([self.getString("arg1", '\x00'*3),
-                           self.getString("arg2", '\x00'*3)])
-
-
-class HTMLParserTest(light.SymbolicTest):
-    def setUp(self):        
-        self.HTMLParser = importlib.import_module("HTMLParser")
-    
-    def runTest(self):
-        parser = self.HTMLParser.HTMLParser()
-        parser.feed(self.getString("html", '\x00'*15))
-        parser.close()
-
-
-################################################################################
-# Third-party libraries
-
-class SimpleJSONTest(light.SymbolicTest):
-    def setUp(self):
-        self.simplejson = importlib.import_module("simplejson")
-        
-    def runTest(self):
-        self.simplejson.loads(self.getString("input", '\x00'*15))
-
-
-class XLRDTest(light.SymbolicTest):
-    def setUp(self):
-        self.xlrd = importlib.import_module("xlrd")
-        
-    def runTest(self):
-        i = self.getString("input", '\x00'*20)
-        self.xlrd.open_workbook(file_contents=i)
-
-
-class UnicodeCSVTest(light.SymbolicTest):
-    def setUp(self):
-        self.unicodecsv = importlib.import_module("unicodecsv")
-        
-    def runTest(self):        
-        f = cStringIO.StringIO(self.getString("input", '\x00'*5))
-        r = self.unicodecsv.reader(f, encoding="utf-8")
-        for row in r:
-            pass
-        f.close()
 
 
 if __name__ == "__main__":

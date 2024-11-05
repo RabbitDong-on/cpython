@@ -102,36 +102,6 @@ symbex_symint(PyObject *self, PyObject *args) {
 
 /*----------------------------------------------------------------------------*/
 
-PyDoc_STRVAR(symbex_concrete_doc,
-"concrete(obj) -> object\n\
-\n\
-Concretize a symbolic object");
-
-static PyObject *
-symbex_concrete(PyObject *self, PyObject *args) {
-	PyObject *target;
-
-	if (!PyArg_ParseTuple(args, "O:concrete", &target)) {
-		return NULL;
-	}
-
-	if (!s2e_guest->version()) {
-		Py_INCREF(target);
-		return target;
-	}
-
-	if (PyInt_Check(target)) {
-		PyIntObject *int_target = (PyIntObject*)target;
-		long value = int_target->ob_ival;
-		s2e_guest->GetExample(&value, sizeof(value));
-
-		return PyInt_FromLong(value);
-	} else {
-		Py_INCREF(target);
-		return target;
-	}
-}
-
 
 /*----------------------------------------------------------------------------*/
 
