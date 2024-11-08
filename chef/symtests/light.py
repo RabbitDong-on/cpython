@@ -99,7 +99,8 @@ def runSymbolic(symbolic_test, max_time=0, interactive=False, **test_args):
 
     is_error_path = False
     symbex.startconcolic(max_time, not interactive)
-
+    
+    # 每一个状态都会对应一个endconcolic
     try:
         test_inst.runTest()
     except:

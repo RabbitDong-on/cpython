@@ -80,7 +80,11 @@ class HumanevalTest(light.SymbolicTest):
         return False
     def runTest(self):
         threshold=self.getInt("value",0)
-        numbers=self.getString("List",'\x00'*10)
+        # numbers=self.getString("List",'\x00'*10)
+        num1=self.getInt("num1",0,max_value=4,min_value=0)
+        num2=self.getInt("num2",0,max_value=4,min_value=0)
+        num3=self.getInt("num3",0,max_value=4,min_value=0)
+        numbers=[num1,num2,num3]
         resA=self.has_close_elements_A(numbers,threshold)
         resB=self.has_close_elements_B(numbers,threshold)
         # res=(self.has_close_elements_A(numbers,threshold)==self.has_close_elements_B(numbers,threshold))

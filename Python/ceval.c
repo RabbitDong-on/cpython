@@ -104,6 +104,7 @@ typedef struct {
 	uint32_t op_code;
 	uint32_t frame_count;
 	uint32_t frames[_SYMBEX_TRACE_SIZE];
+    uint8_t fuction[61];
 } __attribute__((packed)) TraceUpdate;
 
 static TraceUpdate trace_update;
@@ -6484,12 +6485,14 @@ dtrace_function_entry(PyFrameObject *f)
 
 #ifdef _SYMBEX_INSTRUMENT
 static int report_trace(PyFrameObject *frame, uint32_t op_code) {
+    const char *funcname;
+    const char *filename;
 	trace_update.op_code = op_code;
-
 	trace_update.frame_count = _SYMBEX_TRACE_SIZE;
 	trace_update.frames[0] = (uint32_t)frame->f_lasti;
 	trace_update.frames[1] = (uintptr_t)frame;
-
+    filename=PyUnicode_AsUTF8(frame->f_code->co_filename);
+    funcname=PyUnicode_AsUTF8(frame->f_code->co_name);
 	if (s2e_invoke_plugin("InterpreterMonitor", (void*)&trace_update,
 			sizeof(TraceUpdate)) != 0) {
 		return -1;
